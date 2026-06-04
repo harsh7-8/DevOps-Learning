@@ -1,15 +1,15 @@
 echo Hello World!
 
-echo \\e[em30Hello World\\e[0m
-echo \\e[em31Hello World\\e[0m
-echo \\e[em32Hello World\\e[0m
-echo \\e[em33Hello World\\e[0m
-echo \\e[em34Hello World\\e[0m
-echo \\e[em35Hello World\\e[0m
+echo \\e[30mHello World\\e[0m
+echo \\e[31mHello World\\e[0m
+echo \\e[32mHello World\\e[0m
+echo \\e[33mHello World\\e[0m
+echo \\e[34mHello World\\e[0m
+echo \\e[35mHello World\\e[0m
 
-echo \\e[em40Hello World\\e[0m
-echo \\e[em41Hello World\\e[0m
-echo \\e[em42Hello World\\e[0m
-echo \\e[em43Hello World\\e[0m
-echo \\e[em44Hello World\\e[0m
-echo \\e[em45Hello World\\e[0m
+echo \\e[40mHello World\\e[0m
+echo \\e[41mHello World\\e[0m
+echo \\e[42mHello World\\e[0m
+echo \\e[43mHello World\\e[0m
+echo \\e[44mHello World\\e[0m
+echo \\e[45mHello World\\e[0m
