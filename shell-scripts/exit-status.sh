@@ -1,3 +1,4 @@
+sudo set -x
 ls /tmp/ >/tmp/output.txt
 echo "The exit status of this command : $?"
 
