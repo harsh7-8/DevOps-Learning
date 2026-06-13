@@ -6,5 +6,4 @@ echo "This is second test message" 1> /tmp/output.txt
 echo "This is a test message" 1>/tmp/output1.txt
 echo "This is second test message" 1>> /tmp/output1.txt
 
-ls /tmp/ > /tmp/output.txt
-ls /tmp2/ 2> /tmp/error.txt
+ls /tmp/nonexistentfile 2> /tmp/error.txt
