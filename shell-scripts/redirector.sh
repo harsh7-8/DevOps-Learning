@@ -6,4 +6,8 @@ echo "This is second test message" 1> /tmp/output.txt
 echo "This is a test message" 1>/tmp/output1.txt
 echo "This is second test message" 1>> /tmp/output1.txt
 
+# 2> Redirect stderr to a file (overwrite)
 ls /tmp/nonexistentfile 2> /tmp/error.txt
+
+ls /nonexistentfile &> /dev/null
+echo "This message will not be displayed on the terminal using /dev/null"
