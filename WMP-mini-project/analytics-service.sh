@@ -1,6 +1,6 @@
 dnf install -y python3.12 python3.12-pip python3.12-devel gcc
 
-ANALYTICS_SERVICE = analytics-service
+ANALYTICS_SERVICE=analytics-service
 useradd -r -s /bin/false appuser
 mkdir -p /app
 

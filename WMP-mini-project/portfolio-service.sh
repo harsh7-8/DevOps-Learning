@@ -1,6 +1,6 @@
 dnf install -y java-21-openjdk-devel
 
-PORTFOLIO_SERVICE = portfolio-service
+PORTFOLIO_SERVICE=portfolio-service
 
 useradd -r -s /bin/false appuser
 mkdir -p /app

@@ -1,7 +1,8 @@
 dnf install -y golang
 go version
 
-AUTH_SERVICE = auth-service
+#No spaces on either side of = while delaring variables in bash
+AUTH_SERVICE=auth-service
 
 useradd -r -s /bin/false appuser
 mkdir -p /app
