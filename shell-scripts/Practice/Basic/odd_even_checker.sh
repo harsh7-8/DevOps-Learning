@@ -1,4 +1,4 @@
-read - "Enter a number:" num
+read -p "Enter a number:" num
 
 if (( num%=0 )); then
     echo "The number is even."
