@@ -20,6 +20,12 @@ case $choice in
         ;;
     3)
         read -p "Enter username to delete:" username
+        if id "$username" &>/dev/null; then
+            echo "User $username exists. Deleting..."
+        else 
+            echo "User $username does not exist."
+            exit 1
+        fi
         sudo userdel $username
         echo "User $username deleted successfully."
         ;;
