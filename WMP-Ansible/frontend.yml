@@ -25,7 +25,7 @@
 
     - name: Download and extract frontend artifacts
       ansible.builtin.unarchive:
-        src: curl -L -o /tmp/frontend.tar.gz https://raw.githubusercontent.com/raghudevopsb88/wealth-project/main/artifacts/frontend.tar.gz
+        src: curl -L -o /tmp/ https://raw.githubusercontent.com/raghudevopsb88/wealth-project/main/artifacts/frontend.tar.gz
         dest: /usr/share/nginx
         remote_src: yes    
 
