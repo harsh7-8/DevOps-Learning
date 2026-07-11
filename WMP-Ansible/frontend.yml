@@ -1,7 +1,10 @@
 - name: Frontend Setup          # Human-readable name for this play (shows in terminal output)
   hosts: all                    # Which hosts from inventory to target (all = every host listed)
   become: true                  # Escalate privileges (equivalent to running as sudo)
-  tasks:                        # List of actions to perform on the target hosts
+  tasks:    
+  
+    - name: Install nodejs repo files
+      ansible.builtin.shell: curl -fsSL https://rpm.nodesource.com/setup_22.x | bash -                    # List of actions to perform on the target hosts
   
     - name: Install nginx webserver and nodejs    # Task name — shows in output, helps debug failures
       ansible.builtin.dnf:               # Module to use — dnf is the package manager (RHEL/Amazon Linux)
@@ -19,9 +22,6 @@
       ansible.builtin.file:
         path: /usr/share/nginx/html
         state: absent
-
-    - name: Install nodejs repo files
-      ansible.builtin.shell: curl -fsSL https://rpm.nodesource.com/setup_22.x | bash -
 
     - name: Download and extract nginx artifacts
       ansible.builtin.unarchive:
