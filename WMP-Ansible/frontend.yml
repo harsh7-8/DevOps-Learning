@@ -35,8 +35,8 @@
       
     - name: Update nginx config file
       ansible.builtin.copy:
-      src: nginx.conf
-      dest: /etc/nginx/nginx.conf
+        src: nginx.conf
+        dest: /etc/nginx/nginx.conf
 
     - name: Install nodejs repo failure
       ansible.builtin.shell: curl -fsSL https://rpm.nodesource.com/setup_22.x | bash -
