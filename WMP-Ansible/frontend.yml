@@ -1,44 +1,55 @@
-- name: Frontend setup using nginx
-  hosts: all
-  become: true #Privilege escalation 
-  tasks:
+# source common.sh
 
-    - name: Install NodeJS Repo files
-      ansible.builtin.shell: curl -fsSL https://rpm.nodesource.com/setup_22.x | bash -
+# echo -e "${YC}Installing frontend dependencies...${NC}"
+# dnf module disable nginx -y &>>$OUTPUT
+# dnf module enable nginx:1.26 -y &>>$OUTPUT
+# dnf install -y nginx &>>$OUTPUT
+# status_check
 
-    - name: Install nginx
-      ansible.builtin.dnf:
-        name: 
-          - '@nginx:1.26'
-          - nodejs
-        state: present
+# echo -e "${YC}Update nginx configurations...${NC}"
+# cp nginx.conf /etc/nginx/nginx.conf &>>$OUTPUT
+# status_check
 
-    - name: Update nginx configurations
-      ansible.builtin.copy:
-        src: nginx.conf
-        dest: /etc/nginx/nginx.conf
+# echo -e "${YC}Installing NodeJS...${NC}"
+# curl -fsSL https://rpm.nodesource.com/setup_22.x | bash - &>>$OUTPUT
+# dnf install -y nodejs &>>$OUTPUT &>>$OUTPUT
+# status_check
 
-    - name: Recursively remove nginx directory
-      ansible.builtin.file:
-        path: /usr/share/nginx/html
-        state: absent      
+# echo -e "${YC}Checking NodeJS and npm versions...${NC}"
+# node --version &>>$OUTPUT
+# npm --version &>>$OUTPUT
+# status_check
 
-    - name: Download and extract frontend artifacts
-      ansible.builtin.unarchive:
-        src: https://raw.githubusercontent.com/raghudevopsb88/wealth-project/main/artifacts/frontend.tar.gz
-        dest: /usr/share/nginx
-        remote_src: yes    
+# echo -e "${YC}Downloading frontend artifacts...${NC}"
+# curl -L -o /tmp/frontend.tar.gz https://raw.githubusercontent.com/raghudevopsb88/wealth-project/main/artifacts/frontend.tar.gz &>>$OUTPUT
+# mkdir -p /tmp/frontend &>>$OUTPUT
+# cd /tmp
+# tar xzf /tmp/frontend.tar.gz &>>$OUTPUT
+# status_check
 
-    - name: Build frontend application
-      ansible.builtin.shell: npm ci ; npm run build ; mv dist html
-      args:
-        chdir: /usr/share/nginx/
+# echo -e "${YC}Deploying frontend application...${NC}"
+# cd /tmp/frontend
+# npm ci &>>$OUTPUT
+# npm run build &>>$OUTPUT
+# status_check
 
+# echo -e "${YC}Copying frontend build to nginx html directory...${NC}"
+# rm -rf /usr/share/nginx/html/* &>>$OUTPUT
+# cp -r /tmp/dist/* /usr/share/nginx/html/ &>>$OUTPUT
+# status_check
 
-    - name: Start nginx service
-      ansible.builtin.systemd_service:
-        name: nginx
-        enabled: true
-        state: restarted
-    
+# echo -e "${YC}Starting nginx service...${NC}"
+# systemctl enable nginx &>>$OUTPUT
+# systemctl restart nginx &>>$OUTPUT
+# status_check
 
+- name: Frontend Setup          # Human-readable name for this play (shows in terminal output)
+  hosts: all                    # Which hosts from inventory to target (all = every host listed)
+  become: true                  # Escalate privileges (equivalent to running as sudo)
+  tasks:                        # List of actions to perform on the target hosts
+  
+    - name: Install nginx webserver       # Task name — shows in output, helps debug failures
+      ansible.builtin.dnf:               # Module to use — dnf is the package manager (RHEL/Amazon Linux)
+        name: @nginx:1.26                # Package to install — @ means it's a module stream, not a plain package
+        state: present                   # Desired state — present=install it, absent=remove it, latest=upgrade it
+      
