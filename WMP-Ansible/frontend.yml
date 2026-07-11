@@ -50,6 +50,6 @@
   
     - name: Install nginx webserver       # Task name — shows in output, helps debug failures
       ansible.builtin.dnf:               # Module to use — dnf is the package manager (RHEL/Amazon Linux)
-        name: @nginx:1.26                # Package to install — @ means it's a module stream, not a plain package
+        name: '@nginx:1.26'                # Package to install — @ means it's a module stream, not a plain package
         state: present                   # Desired state — present=install it, absent=remove it, latest=upgrade it
       
