@@ -1,26 +1,3 @@
-# echo -e "${YC}Downloading frontend artifacts...${NC}"
-# curl -L -o /tmp/frontend.tar.gz https://raw.githubusercontent.com/raghudevopsb88/wealth-project/main/artifacts/frontend.tar.gz &>>$OUTPUT
-# mkdir -p /tmp/frontend &>>$OUTPUT
-# cd /tmp
-# tar xzf /tmp/frontend.tar.gz &>>$OUTPUT
-# status_check
-
-# echo -e "${YC}Deploying frontend application...${NC}"
-# cd /tmp/frontend
-# npm ci &>>$OUTPUT
-# npm run build &>>$OUTPUT
-# status_check
-
-# echo -e "${YC}Copying frontend build to nginx html directory...${NC}"
-# rm -rf /usr/share/nginx/html/* &>>$OUTPUT
-# cp -r /tmp/dist/* /usr/share/nginx/html/ &>>$OUTPUT
-# status_check
-
-# echo -e "${YC}Starting nginx service...${NC}"
-# systemctl enable nginx &>>$OUTPUT
-# systemctl restart nginx &>>$OUTPUT
-# status_check
-
 - name: Frontend Setup          # Human-readable name for this play (shows in terminal output)
   hosts: all                    # Which hosts from inventory to target (all = every host listed)
   become: true                  # Escalate privileges (equivalent to running as sudo)
@@ -38,7 +15,12 @@
         src: nginx.conf
         dest: /etc/nginx/nginx.conf
 
-    - name: Install nodejs repo failure
+    - name: Remove nginx default html
+      ansible.builtin.file:
+        path: /usr/share/nginx/html
+        state: absent
+
+    - name: Install nodejs repo files
       ansible.builtin.shell: curl -fsSL https://rpm.nodesource.com/setup_22.x | bash -
 
     - name: Download and extract nginx artifacts
@@ -46,3 +28,16 @@
         src: https://raw.githubusercontent.com/raghudevopsb88/wealth-project/main/artifacts/frontend.tar.gz
         dest: /tmp/
         remote_src: yes
+
+    - name: Install nodejs repo files
+      ansible.builtin.shell: npm ci; npm run build; mv dist html
+      args:
+        chdir: /usr/share/nginx/
+
+    - name: Start nginx service
+      ansible.builtin.systemd_service:
+        name: nginx
+        state: restarted
+        enabled: true
+
+
