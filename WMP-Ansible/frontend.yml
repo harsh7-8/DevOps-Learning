@@ -4,7 +4,12 @@
   tasks:    
   
     - name: Install nodejs repo files
-      ansible.builtin.shell: curl -fsSL https://rpm.nodesource.com/setup_22.x | bash -                    # List of actions to perform on the target hosts
+      ansible.builtin.shell: curl -fsSL https://rpm.nodesource.com/setup_22.x | bash -  
+      
+    - name: Remove old nodejs             # ← ADD THIS
+      ansible.builtin.dnf:
+        name: nodejs
+        state: absent                  # List of actions to perform on the target hosts
   
     - name: Install nginx webserver and nodejs    # Task name — shows in output, helps debug failures
       ansible.builtin.dnf:               # Module to use — dnf is the package manager (RHEL/Amazon Linux)
