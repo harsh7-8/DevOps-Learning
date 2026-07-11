@@ -30,7 +30,7 @@
         remote_src: yes
 
     - name: Install nodejs repo files
-      ansible.builtin.shell: npm ci; npm run build; mv dist html
+      ansible.builtin.shell: npm ci ; npm run build ; mv dist html
       args:
         chdir: /usr/share/nginx/
 
