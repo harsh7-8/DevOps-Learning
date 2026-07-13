@@ -22,8 +22,7 @@ status_check
 set_permissions
 
 echo -e "${YC}Copy Service File${NC}"
-pwd
-cp ${service_name}.service /etc/systemd/system/${service_name}.service &>>$OUTPUT
+cp "${SCRIPT_DIR}/${service_name}.service" /etc/systemd/system/${service_name}.service &>>$OUTPUT
 status_check
 
 start_service

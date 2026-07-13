@@ -9,6 +9,8 @@ app_prereq() {
   tar xzf /tmp/${service_name}.tar.gz
 }
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 YC="\e[33m"
 RC="\e[31m"
 GC="\e[32m"
