@@ -1,20 +1,23 @@
-dnf install -y python3.12 python3.12-pip python3.12-devel gcc
+source common.sh
+service_name=analytics-service
 
-ANALYTICS_SERVICE=analytics-service
-useradd -r -s /bin/false appuser
-mkdir -p /app
+echo -e "${YC}Install Python${NC}"
+dnf install -y python3.12 python3.12-pip python3.12-devel gcc &>>$OUTPUT
+status_check
 
-cp ${ANALYTICS_SERVICE}.service /etc/systemd/system/${ANALYTICS_SERVICE}.service
+echo -e "${YC}Download and Extract Application${NC}"
+app_prereq
+status_check
 
-curl -L -o /tmp/${ANALYTICS_SERVICE}.tar.gz https://raw.githubusercontent.com/raghudevopsb88/wealth-project/main/artifacts/${ANALYTICS_SERVICE}.tar.gz
+echo -e "${YC}Install Application Dependencies${NC}"
 cd /app
-tar xzf /tmp/${ANALYTICS_SERVICE}.tar.gz
+pip3.12 install --no-cache-dir . &>>$OUTPUT
+status_check
 
-cd /app
-pip3.12 install --no-cache-dir .
-chown -R appuser:appuser /app
-chmod o-rwx /app -R
+set_permissions
 
-systemctl daemon-reload
-systemctl enable ${ANALYTICS_SERVICE}
-systemctl start ${ANALYTICS_SERVICE}
+echo -e "${YC}Copy Service File${NC}"
+cp ${service_name}.service /etc/systemd/system/${service_name}.service &>>$OUTPUT
+status_check
+
+start_service

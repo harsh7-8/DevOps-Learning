@@ -1,24 +1,22 @@
-dnf install -y golang
-go version
+source common.sh
+service_name=auth-service
 
-#No spaces on either side of = while delaring variables in bash
-AUTH_SERVICE=auth-service
+echo -e "${YC}Install Golang${NC}"
+dnf install -y golang &>>$OUTPUT
+status_check
 
-useradd -r -s /bin/false appuser
-mkdir -p /app
+echo -e "${YC}Copy Service File${NC}"
+cp ${service_name}.service /etc/systemd/system/${service_name}.service &>>$OUTPUT
+status_check
 
-cp ${AUTH_SERVICE}.service /etc/systemd/system/${AUTH_SERVICE}.service
+echo -e "${YC}Download and Extract Application${NC}"
+app_prereq
+status_check
 
-curl -L -o /tmp/${AUTH_SERVICE}.tar.gz https://raw.githubusercontent.com/raghudevopsb88/wealth-project/main/artifacts/${AUTH_SERVICE}.tar.gz
+echo -e "${YC}Build Application${NC}"
 cd /app
-tar xzf /tmp/${AUTH_SERVICE}.tar.gz
+CGO_ENABLED=0 go build -o ${service_name} ./cmd/server &>>$OUTPUT
+status_check
 
-cd /app
-CGO_ENABLED=0 go build -o ${AUTH_SERVICE} ./cmd/server
-
-chown -R appuser:appuser /app
-chmod o-rwx /app -R
-
-systemctl daemon-reload
-systemctl enable ${AUTH_SERVICE}
-systemctl start ${AUTH_SERVICE}
+set_permissions
+start_service

@@ -1,12 +1,33 @@
-dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm
-dnf -qy module disable postgresql
-dnf install -y postgresql16-server postgresql16
-/usr/pgsql-16/bin/postgresql-16-setup initdb
-sed -i "/listen_addresses/ c listen_addresses = '*'" /var/lib/pgsql/16/data/postgresql.conf
-#sed -i "/replication/! s/peer/trust/" /var/lib/pgsql/16/data/pg_hba.conf
+source common.sh
 
-cp pg_hba.conf /var/lib/pgsql/16/data/pg_hba.conf
+echo -e "${YC}Install PostgreSQL Repository${NC}"
+dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm &>>$OUTPUT
+status_check
 
-systemctl restart postgresql-16
-sudo -u postgres /usr/pgsql-16/bin/psql -f schema.sql
-sudo -u postgres /usr/pgsql-16/bin/psql -d wmp -c "\dn"
+echo -e "${YC}Install PostgreSQL${NC}"
+dnf -qy module disable postgresql &>>$OUTPUT
+dnf install -y postgresql16-server postgresql16 &>>$OUTPUT
+status_check
+
+echo -e "${YC}Initialize Database${NC}"
+/usr/pgsql-16/bin/postgresql-16-setup initdb &>>$OUTPUT
+status_check
+
+echo -e "${YC}Start PostgreSQL Service${NC}"
+systemctl enable postgresql-16 &>>$OUTPUT
+systemctl start postgresql-16 &>>$OUTPUT
+status_check
+
+echo -e "${YC}Update PostgreSQL Config${NC}"
+sed -i "s/#listen_addresses = 'localhost'/listen_addresses = '*'/" /var/lib/pgsql/16/data/postgresql.conf &>>$OUTPUT
+echo "host    all    all    0.0.0.0/0    scram-sha-256" >> /var/lib/pgsql/16/data/pg_hba.conf
+sed -i 's/local   all             all                                     peer/local   all             all                                     trust/' /var/lib/pgsql/16/data/pg_hba.conf &>>$OUTPUT
+status_check
+
+echo -e "${YC}Restart PostgreSQL Service${NC}"
+systemctl restart postgresql-16 &>>$OUTPUT
+status_check
+
+echo -e "${YC}Run Setup SQL${NC}"
+sudo -u postgres /usr/pgsql-16/bin/psql < setup.sql &>>$OUTPUT
+status_check

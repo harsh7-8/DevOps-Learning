@@ -1,20 +1,28 @@
 source common.sh
+service_name=portfolio-service
 
-dnf install -y java-21-openjdk-devel
-PORTFOLIO_SERVICE=portfolio-service
+echo -e "${YC}Install Java${NC}"
+dnf install -y java-21-openjdk-devel &>>$OUTPUT
+status_check
 
-cp ${PORTFOLIO_SERVICE}.service /etc/systemd/system/${PORTFOLIO_SERVICE}.service
-
+echo -e "${YC}Download and Extract Application${NC}"
 app_prereq
+status_check
 
+echo -e "${YC}Build Application${NC}"
 cd /app
-chmod +x gradlew
-./gradlew bootJar --no-daemon -x test
+chmod +x gradlew &>>$OUTPUT
+./gradlew bootJar --no-daemon -x test &>>$OUTPUT
+status_check
 
-cp /app/build/libs/*.jar /app/${PORTFOLIO_SERVICE}.jar
-chown -R appuser:appuser /app
-chmod o-rwx /app -R
+echo -e "${YC}Copy Jar File${NC}"
+cp /app/build/libs/*.jar /app/${service_name}.jar &>>$OUTPUT
+status_check
 
-systemctl daemon-reload
-systemctl enable ${PORTFOLIO_SERVICE}
-systemctl start ${PORTFOLIO_SERVICE}
+set_permissions
+
+echo -e "${YC}Copy Service File${NC}"
+cp ${service_name}.service /etc/systemd/system/${service_name}.service &>>$OUTPUT
+status_check
+
+start_service
