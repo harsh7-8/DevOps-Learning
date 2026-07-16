@@ -1,0 +1,36 @@
+- name: Install nodejs repo
+  ansible.builtin.shell: curl -fsSL https://rpm.nodesource.com/setup_22.x | bash -  
+
+- name: Install nginx webserver and nodejs    # Task name — shows in output, helps debug failures
+  ansible.builtin.dnf:               # Module to use — dnf is the package manager (RHEL/Amazon Linux)
+    name: 
+      - '@nginx:1.26'
+      - nodejs                # Package to install — @ means it's a module stream, not a plain package
+    state: present                   # Desired state — present=install it, absent=remove it, latest=upgrade it
+  
+- name: Update nginx config file
+  ansible.builtin.copy:
+    src: nginx.conf
+    dest: /etc/nginx/nginx.conf
+
+- name: Remove nginx default html
+  ansible.builtin.file:
+    path: /usr/share/nginx/html
+    state: absent
+
+- name: Download and extract nginx artifacts
+  ansible.builtin.unarchive:
+    src: https://raw.githubusercontent.com/raghudevopsb88/wealth-project/main/artifacts/frontend.tar.gz
+    dest: /usr/share/nginx
+    remote_src: yes
+
+- name: Build frontend
+  ansible.builtin.shell: npm ci ; npm run build ; mv dist html
+  args:
+    chdir: /usr/share/nginx/
+
+- name: Start nginx service
+  ansible.builtin.systemd_service:
+    name: nginx
+    state: restarted
+    enabled: true
