@@ -1,5 +1,0 @@
-- name: Frontend Setup          # Human-readable name for this play (shows in terminal output)
-  hosts: all                    # Which hosts from inventory to target (all = every host listed)
-  become: true                  # Escalate privileges (equivalent to running as sudo)
-  roles: 
-    - frontend
