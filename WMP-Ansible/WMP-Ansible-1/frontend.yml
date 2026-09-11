@@ -9,9 +9,9 @@
     - name: Install nginx webserver and nodejs    # Task name — shows in output, helps debug failures
       ansible.builtin.dnf:               # Module to use — dnf is the package manager (RHEL/Amazon Linux)
         name: 
-          - '@nginx:1.26'
-          - nodejs                # Package to install — @ means it's a module stream, not a plain package
-        state: present                   # Desired state — present=install it, absent=remove it, latest=upgrade it
+          - '@nginx:1.26'         #← from default RHEL/Amazon Linux repo
+          - nodejs                #← from NodeSource repo (added in Task 1). Package to install — @ means it's a module stream, not a plain package
+        state: present            # Desired state — present=install it, absent=remove it, latest=upgrade it
       
     - name: Update nginx config file
       ansible.builtin.copy:
