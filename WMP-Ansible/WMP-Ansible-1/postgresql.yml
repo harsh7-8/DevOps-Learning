@@ -1,6 +1,6 @@
-- name: Postgres Database Setup       
-  hosts: all                   
-  become: true                 
+- name: Postgres setup
+  hosts: all
+  become: yes
   tasks:
     - name: Install PostgreSQL Repository
       ansible.builtin.dnf:
@@ -8,7 +8,7 @@
         state: present
         disable_gpg_check: true
 
-    - name: Disable default postgres module
+    - name: Disable postgres default module
       ansible.builtin.shell: dnf -qy module disable postgresql
 
     - name: Install Postgres
@@ -18,37 +18,27 @@
           - "postgresql16-server"
           - "postgresql16"
 
-    - name: Check if DB already initialized
-      ansible.builtin.stat:
-        path: /var/lib/pgsql/16/data/PG_VERSION
-      register: pgdata      
-
     - name: Initialize Database
-      ansible.buildin.shell: /usr/pgsql-16/bin/postgresql-16-setup initdb
-      when: not pgdata.stat.exists   # only runs if NOT already initialized, ignore_errors: yes (if this task fails, just note it and keep going.)
+      ansible.builtin.shell: /usr/pgsql-16/bin/postgresql-16-setup initdb
+      ignore_errors: yes
 
-    - name: Update listen_addresses in postgresql.conf
-      ansible.builtin.shell: sed -i "s/#listen_addresses = 'localhost'/listen_addresses = '*'/" /var/lib/pgsql/16/data/postgresql.conf
+    - name: Update postgres listen address
+      ansible.builtin.replace:
+        path: /var/lib/pgsql/16/data/postgresql.conf
+        regexp: "#listen_addresses = 'localhost'"
+        replace: "listen_addresses = '*'"
 
-    # - name: Add remote access rule to pg_hba.conf
-    #   ansible.builtin.lineinfile:  #Manages a single line inside a file — add it, remove it, or replace it. Idempotent by default.
-    #     path: /var/lib/pgsql/16/data/pg_hba.conf
-    #     line: "host    all    all    0.0.0.0/0    scram-sha-256"
-
-    # - name: Update local auth to trust in pg_hba.conf
-    #   ansible.builtin.shell: sed -i 's/local   all             all                                     peer/local   all             all                                     trust/' /var/lib/pgsql/16/data/pg_hba.conf
-
-    - name: Copy pg_hba.conf file
+    - name: Copy pg_hba file
       ansible.builtin.copy:
         src: pg_hba.conf
-        dest: /var/lib/pgsql/16/data/pg_hba.conf     
+        dest: /var/lib/pgsql/16/data/pg_hba.conf
 
     - name: Start PostgreSQL Service
       ansible.builtin.systemd_service:
+        name: postgresql-16
         state: restarted
-        name: postgresql16   
-        enabled: true
-      
+        enabled: yes
+
     - name: Copy schema file
       ansible.builtin.copy:
         src: setup.sql
