@@ -3,7 +3,8 @@
   become: true                 
   tasks:
     - name: Install PostgreSQL Repository
-      ansible.builtin.dnf: https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+      ansible.builtin.dnf:
+        name: https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm
         state: present
         disable_gpg_check: true
 
@@ -20,11 +21,11 @@
     - name: Check if DB already initialized
       ansible.builtin.stat:
         path: /var/lib/pgsql/16/data/PG_VERSION
-        register: pgdata      
+      register: pgdata      
 
     - name: Initialize Database
       ansible.buildin.shell: /usr/pgsql-16/bin/postgresql-16-setup initdb
-        when: not pgdata.stat.exists   # only runs if NOT already initialized, ignore_errors: yes (if this task fails, just note it and keep going.)
+      when: not pgdata.stat.exists   # only runs if NOT already initialized, ignore_errors: yes (if this task fails, just note it and keep going.)
 
     - name: Update listen_addresses in postgresql.conf
       ansible.builtin.shell: sed -i "s/#listen_addresses = 'localhost'/listen_addresses = '*'/" /var/lib/pgsql/16/data/postgresql.conf
