@@ -20,7 +20,7 @@ resource "aws_instance" "wmp_instances" {
 
   ami                    = var.ami_id
   instance_type          = var.instance_type
-  vpc_security_group_ids = [data.aws_security_group.allow.id]
+  vpc_security_group_ids = [data.aws_security_group.WMP-project-sg.id]
 
   tags = {
     Name    = each.value
